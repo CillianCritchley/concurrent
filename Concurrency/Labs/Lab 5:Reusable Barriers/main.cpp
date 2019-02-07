@@ -5,7 +5,6 @@
 
 
 static const int num_threads = 100;
-int sharedVariable=0;
 
 
 /*! \fn barrierTask
@@ -18,7 +17,7 @@ void barrierTask(std::shared_ptr<Barrier> theBarrier, int numLoops){
     //Do first bit of task
     std::cout << "A"<< i;
     //Barrier
-    theBarrier.wait();
+    theBarrier->wait();
     //Do second half of task
     std::cout<< "B" << i;
   }
@@ -33,12 +32,12 @@ int main(void){
   /**< Launch the threads  */
   int i=0;
   for(std::thread& t: vt){
-    t=std::thread(updateTask,aBarrier,10);
+    t=std::thread(barrierTask,aBarrier,10);
   }
   /**< Join the threads with the main thread */
   for (auto& v :vt){
       v.join();
   }
-  std::cout << sharedVariable << std::endl;
+  std::cout << std::endl ;
   return 0;
 }

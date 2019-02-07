@@ -46,6 +46,7 @@
 #pragma once
 class Barrier{
   int numThreads;
+  int count=0;
  public:
   Barrier(int numThreads);
   virtual ~Barrier();
