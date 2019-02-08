@@ -46,45 +46,46 @@
 // Code:
 #include "Semaphore.h"
 #include "Barrier.h"
-
+#include <iostream>
 Barrier::~Barrier() {}
 
-Barrier::Barrier(int numThreads) {
-    this->numThreads = numThreads;
+Barrier::Barrier(int numThreads) :numThreads(numThreads),
+sem1(std::shared_ptr<Semaphore>(new Semaphore(0))),
+sem2(std::shared_ptr<Semaphore>(new Semaphore(1))),
+mutex(std::shared_ptr<Semaphore>(new Semaphore(1))){
 }
 
+
 void Barrier::wait() {
-    Semaphore sem1;
-    Semaphore sem2;
-    Semaphore mutex(1);
 
-    mutex.Wait();
+    mutex->Wait();
     count++;
-
 
     if(count == numThreads)
     {
-        sem2.Wait();
-        sem1.Signal();
+        sem2->Wait();
+        sem1->Signal();
     }
-    mutex.Signal();
+    mutex->Signal();
 
-    sem1.Wait();
-    sem1.Signal();
 
-    mutex.Wait();
+    sem1->Wait();
+    sem1->Signal();
+
+    mutex->Wait();
+
     count--;
 
     if (count == 0)
     {
-        sem1.Wait();
-        sem2.Signal();
+        sem1->Wait();
+        sem2->Signal();
 
     }
-    mutex.Signal();
+    mutex->Signal();
 
-    sem2.Wait();
-    sem2.Signal();
+    sem2->Wait();
+    sem2->Signal();
 
 }
 // 
