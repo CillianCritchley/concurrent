@@ -75,7 +75,6 @@ void Barrier::wait() {
     mutex->Wait();
 
     count--;
-
     if (count == 0)
     {
         sem1->Wait();
