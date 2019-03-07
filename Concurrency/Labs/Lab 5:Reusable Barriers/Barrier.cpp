@@ -1,60 +1,46 @@
-// Barrier.cpp --- 
-// 
-// Filename: Barrier.cpp
-// Description: 
-// Author: Joseph
-// Maintainer: 
-// Created: Tue Jan  8 12:14:02 2019 (+0000)
-// Version: 
-// Package-Requires: ()
-// Last-Updated: Tue Jan  8 12:15:21 2019 (+0000)
-//           By: Joseph
-//     Update #: 2
-// URL: 
-// Doc URL: 
-// Keywords: 
-// Compatibility: 
-// 
-// 
 
-// Commentary: 
-// 
-// 
-// 
-// 
 
-// Change Log:
-// 
-// 
-// 
-// 
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or (at
-// your option) any later version.
-// 
-// This program is distributed in the hope that it will be useful, but
-// WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// General Public License for more details.
-// 
-// You should have received a copy of the GNU General Public License
-// along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
-// 
-// 
-
-// Code:
+/*!
+ * \class Barrier
+ *
+ * A reusable barrier class implemented using Semaphores
+ */
 #include "Semaphore.h"
 #include "Barrier.h"
 #include <iostream>
+
+/*!
+ * Virtual destructor for the Barrier class
+ */
 Barrier::~Barrier() {}
 
+/*!
+ *
+ * @param numThreads the number of threads which the barrier is intended to work with
+ * @param sem1 a semaphore instance
+ * @param sem2 a semaphore instance
+ * @param mutex a semaphore instance to be used for mutual exclusion
+ *
+ *
+ */
 Barrier::Barrier(int numThreads) :numThreads(numThreads),
 sem1(std::shared_ptr<Semaphore>(new Semaphore(0))),
 sem2(std::shared_ptr<Semaphore>(new Semaphore(1))),
 mutex(std::shared_ptr<Semaphore>(new Semaphore(1))){
 }
 
+/*!
+ * Each thread calls this function and, having gained access to the mutex, increments the count variable to register
+ * its presence. It checks to see if it is the last thread through. If not, it releases the mutex and proceeds to wait
+ * on sem1 where it remains until the last thread has reached the critical section.  If it is the last thread through
+ * it locks the second barrier (sem2) and opens the first (sem1).
+ *
+ * All threads at this point continue execution down towards the second barrier. Each thread grabs the mutex, decrements
+ * the count variable to register that it has passed this point and checks to see if it is the last thread through.
+ * If it is not, it releases the mutex and proceeds to wait on sem1 until the last thread through opens the barrier.
+ * If it is the last thread through it locks the top barrier and then unlocks the bottom, allowing all threads to proceed
+ * through the barriers again.
+ */
 
 void Barrier::wait() {
 
@@ -88,4 +74,3 @@ void Barrier::wait() {
 
 }
 // 
-// Barrier.cpp ends here

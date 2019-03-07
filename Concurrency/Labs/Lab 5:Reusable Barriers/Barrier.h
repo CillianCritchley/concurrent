@@ -46,12 +46,21 @@
 #include "Semaphore.h"
 #pragma once
 class Barrier{
+    /*!
+     * the number of threads the barrier is to remain locked for.
+     */
     int numThreads;
 
+    /*!
+     *  semaphore instances
+     */
     std::shared_ptr<Semaphore> sem1 ;
     std::shared_ptr<Semaphore> sem2 ;
     std::shared_ptr<Semaphore> mutex ;
 
+    /*!
+     * A variable to keep track of how many threads have reached the barrier
+     */
   int count=0;
  public:
   Barrier(int numThreads);

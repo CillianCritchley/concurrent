@@ -2,19 +2,29 @@
 #include <iostream>
 #include <thread>
 #include <vector>
+/*! \mainpage Mutual Exclusion
+ * Uses a semaphore instance as a mutex to enforce mutual exclusion
+*/
 
-
+/*!
+ *  The number of threads that are to be created
+ */
 static const int num_threads = 100;
+/*!
+ * to be shared among all threads and incremented without race conditions
+ */
 int sharedVariable=0;
 
 
-/*! \fn updateTask
-    \brief An Implementation of Mutual Exclusion using Semaphores
 
-   Uses C++11 features such as mutex and condition variables to implement an example of a rendezvous for threads
-
-*/
-/*! displays a message that is split in to 2 sections to show how a rendezvous works*/
+/*! \brief increments a shared variable a number of times across multiple threads
+ *
+ * @param firstSem   A Semaphore instance
+ * @param numUpdates The number of times the shared variable is to be incremented per thread
+ *
+ * This function is passed to a number of threads, each of which is to increment the sharedVariable within numUpdates
+ *  times.
+ */
 void updateTask(std::shared_ptr<Semaphore> firstSem, int numUpdates){
 
  
@@ -27,17 +37,20 @@ void updateTask(std::shared_ptr<Semaphore> firstSem, int numUpdates){
 
 }
 
-
+/*!
+ * creates a num_threads number of threads. Assigns the updateTask function to each one, runs them and then
+ * joins them to the main thread
+ */
 int main(void){
   std::vector<std::thread> vt(num_threads);
   std::shared_ptr<Semaphore> aSemaphore( new Semaphore(1));
-  /**< Launch the threads  */
+  // Launch the threads
   int i=0;
   for(std::thread& t: vt){
     t=std::thread(updateTask,aSemaphore,1000);
   }
   std::cout << "Launched from the main\n";
-  /**< Join the threads with the main thread */
+  // Join the threads with the main thread
   for (auto& v :vt){
       v.join();
   }
